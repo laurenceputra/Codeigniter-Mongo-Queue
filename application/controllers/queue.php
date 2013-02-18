@@ -20,9 +20,6 @@ class Queue extends CI_Controller {
             while(true){
                 if(!$queue->hasNext()){
                     $cycles++;
-                    if($cycles % 3 == 0){
-                        $this->sync_random_user();
-                    }
                     if($cycles > 30){
                         $cycles = 0;
                         gc_collect_cycles();
@@ -34,7 +31,33 @@ class Queue extends CI_Controller {
                 }
                 else{
                     $newJob = $queue->getNext();
-                    //execute your stuff here
+                    if($newJob['status'] == 'C'){
+                        //do nothing
+                    }
+                    else if($newJob['status'] == 'I' && time() - $newJob['last_update'] < 60){
+                        //This part is to recover from errors in case daemon dies halfway, eg server reboot
+                        //Change 60 to the amount of time to give each job.
+                    }
+                    else{
+                        $newJob['last_update'] = time();
+                        $newJob['status'] = 'I';
+                        $collection->save($newJob);
+                        //do job
+                        /*************************
+                        For this section, it would be better to fork the jobs to another process to reduce memory footprint.
+                        To do it, simply use the command exec, with the unix command as the argument, i.e. exec(command)
+                        Remember to use the absolute path for this
+                        *************************/
+                        if($newJob['action'] == 'Job1'){
+                            //Change to the action that you have named
+                        }
+                        else if($newJob['action'] == 'Job2'){
+                            //Change to the action that you have named
+                        }
+                        $newJob['last_update'] = time();
+                        $newJob['status'] = 'C';
+                        $collection->save($newJob);
+                    }
                     $newJob = null;
                     unset($newJob);
                 }
