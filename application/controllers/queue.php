@@ -50,9 +50,11 @@ class Queue extends CI_Controller {
                         *************************/
                         if($newJob['action'] == 'Job1'){
                             //Change to the action that you have named
+                            //exec('unix command');
                         }
                         else if($newJob['action'] == 'Job2'){
                             //Change to the action that you have named
+                            //exec('unix command');
                         }
                         $newJob['last_update'] = time();
                         $newJob['status'] = 'C';
